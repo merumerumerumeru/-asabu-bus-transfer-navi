@@ -35,7 +35,6 @@ function App(){
   const setNum=(key:keyof Settings,value:string)=>setSettings(s=>({...s,[key]:Number(value)}))
   return <main>
     <header><p className="eyebrow">地下鉄さっぽろ駅 → 麻生駅 → 花川北2条5丁目</p><h1>麻生バス乗継ナビ</h1><div className="clock">{now.toLocaleTimeString('ja-JP')}</div><p>{now.toLocaleDateString('ja-JP',{dateStyle:'full'})}</p></header>
-    <section className="warning"><strong>現在は動作確認用の仮時刻です。</strong><span>実際の移動にはまだ使用しないでください。</span></section>
     <section className="card"><h2>現在地・条件</h2>
       <label>現在地<select value={settings.location} onChange={e=>setSettings(s=>({...s,location:e.target.value as LocationType}))}><option value="work">職場</option><option value="sapporo">地下鉄さっぽろ駅</option><option value="other">その他</option></select></label>
       {settings.location==='work'&&<label>職場からホームまで<span><input type="number" value={settings.workAccessMinutes} onChange={e=>setNum('workAccessMinutes',e.target.value)}/> 分</span></label>}
@@ -51,6 +50,12 @@ function App(){
   <p>地下鉄改正：{SUBWAY_REVISION}</p>
   <p>対象路線：麻15・麻16・麻17</p>
   <p>対象停留所：花川北2条5丁目</p>
+
+
+
+  <hr />
+
+  <p>Version 1.0.0</p>
 </footer>
   </main>
 }
