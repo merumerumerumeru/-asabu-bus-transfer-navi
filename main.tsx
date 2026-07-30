@@ -33,17 +33,24 @@ function App(){
   },[now,settings,dayType,access])
 
   const setNum=(key:keyof Settings,value:string)=>setSettings(s=>({...s,[key]:Number(value)}))
+  const nextBus=result.buses[0]
+  const arrivalTime=result.arrival===null?'':`${String(Math.floor(result.arrival/60)).padStart(2,'0')}:${String(result.arrival%60).padStart(2,'0')}`
   return <main>
     <header><p className="eyebrow">地下鉄さっぽろ駅 → 麻生駅 → 花川北2条5丁目</p><h1>麻生バス乗継ナビ</h1><div className="clock">{now.toLocaleTimeString('ja-JP')}</div><p>{now.toLocaleDateString('ja-JP',{dateStyle:'full'})}</p></header>
-    <section className="card"><h2>現在地・条件</h2>
+    <section className="card journey"><p className="card-kicker">次に出発する乗継</p><h2>今乗る便</h2>{result.subway&&result.arrival!==null?<div className="journey-steps">
+      <div className="journey-step"><span className="step-label">地下鉄さっぽろ駅 発</span><strong className="primary-time">{result.subway.time}</strong><span className="step-note">南北線・麻生方面</span></div>
+      <div className="journey-step"><span className="step-label">麻生駅 到着見込み</span><strong className="step-time">{arrivalTime}</strong></div>
+      {nextBus?<><div className="journey-step bus-step"><span className="step-label">次のバス</span><strong className="step-time">{nextBus.time} <span className="route-badge">{nextBus.route}</span></strong><span className="step-note">{nextBus.destination} 行き・{nextBus.via}</span></div>
+      <div className="journey-step transfer-step"><span className="step-label">乗換時間</span><strong className="step-time">{nextBus.margin}分</strong><span className={`journey-status ${nextBus.status.level}`}>{nextBus.status.text}</span></div></>:<p className="empty-message">条件に合うバスがありません。</p>}
+    </div>:<p className="empty-message">該当する地下鉄がありません。</p>}</section>
+    <section className="card"><h2>次のバス候補 3件</h2><div className="bus-list">{result.buses.length?result.buses.map(b=><article className={`bus ${b.status.level}`} key={`${b.route}-${b.time}`}><div><span className="route">{b.route}</span><strong className="bus-time">{b.time}</strong></div><div className="bus-detail"><strong>{b.destination} 行き</strong><span>{b.via}</span><span>乗換 {b.margin}分</span></div><span className="status">{b.status.text}</span></article>):<p>条件に合うバスがありません。</p>}</div></section>
+    <details className="card conditions"><summary><span>現在地・条件</span><span className="summary-hint">タップして変更</span></summary><div className="details-body">
       <label>現在地<select value={settings.location} onChange={e=>setSettings(s=>({...s,location:e.target.value as LocationType}))}><option value="work">職場</option><option value="sapporo">地下鉄さっぽろ駅</option><option value="other">その他</option></select></label>
       {settings.location==='work'&&<label>職場からホームまで<span><input type="number" value={settings.workAccessMinutes} onChange={e=>setNum('workAccessMinutes',e.target.value)}/> 分</span></label>}
       {settings.location==='other'&&<label>ホームまで<span><input type="number" value={settings.otherAccessMinutes} onChange={e=>setNum('otherAccessMinutes',e.target.value)}/> 分</span></label>}
       <label>曜日区分<select value={settings.dayOverride} onChange={e=>setSettings(s=>({...s,dayOverride:e.target.value as Settings['dayOverride']}))}><option value="auto">自動判定</option><option value="weekday">平日</option><option value="saturday">土曜</option><option value="sundayHoliday">日祝</option></select></label>
       <label>地下鉄遅延<select value={settings.delayMinutes} onChange={e=>setNum('delayMinutes',e.target.value)}><option value="0">0分</option><option value="1">+1分</option><option value="3">+3分</option><option value="5">+5分</option></select></label>
-    </section>
-    <section className="card journey"><h2>乗る地下鉄</h2>{result.subway&&result.arrival!==null?<><div className="primary-time">{result.subway.time} 発</div><p>南北線・麻生方面</p><p>麻生駅到着見込み：<strong>{String(Math.floor(result.arrival/60)).padStart(2,'0')}:{String(result.arrival%60).padStart(2,'0')}</strong></p></>:<p>該当する地下鉄がありません。</p>}</section>
-    <section className="card"><h2>次に乗れるバス</h2><div className="bus-list">{result.buses.length?result.buses.map(b=><article className={`bus ${b.status.level}`} key={`${b.route}-${b.time}`}><div><span className="route">{b.route}</span><strong className="bus-time">{b.time}</strong></div><div className="bus-detail"><strong>{b.destination} 行き</strong><span>{b.via}</span><span>乗換 {b.margin}分</span></div><span className="status">{b.status.text}</span></article>):<p>条件に合うバスがありません。</p>}</div></section>
+    </div></details>
     <details className="card"><summary>詳細設定</summary><label>地下鉄乗車時間<span><input type="number" value={settings.rideMinutes} onChange={e=>setNum('rideMinutes',e.target.value)}/> 分</span></label><button onClick={()=>setSettings(DEFAULT_SETTINGS)}>初期設定に戻す</button></details>
     <footer>
   <p>バス改正：{BUS_REVISION}</p>
@@ -55,7 +62,7 @@ function App(){
 
   <hr />
 
-  <p>Version 1.0.0</p>
+  <p>Version 1.1.0</p>
 </footer>
   </main>
 }
