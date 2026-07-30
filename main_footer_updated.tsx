@@ -46,12 +46,7 @@ function App(){
     <section className="card journey"><h2>乗る地下鉄</h2>{result.subway&&result.arrival!==null?<><div className="primary-time">{result.subway.time} 発</div><p>南北線・麻生方面</p><p>麻生駅到着見込み：<strong>{String(Math.floor(result.arrival/60)).padStart(2,'0')}:{String(result.arrival%60).padStart(2,'0')}</strong></p></>:<p>該当する地下鉄がありません。</p>}</section>
     <section className="card"><h2>次に乗れるバス</h2><div className="bus-list">{result.buses.length?result.buses.map(b=><article className={`bus ${b.status.level}`} key={`${b.route}-${b.time}`}><div><span className="route">{b.route}</span><strong className="bus-time">{b.time}</strong></div><div className="bus-detail"><strong>{b.destination} 行き</strong><span>{b.via}</span><span>乗換 {b.margin}分</span></div><span className="status">{b.status.text}</span></article>):<p>条件に合うバスがありません。</p>}</div></section>
     <details className="card"><summary>詳細設定</summary><label>地下鉄乗車時間<span><input type="number" value={settings.rideMinutes} onChange={e=>setNum('rideMinutes',e.target.value)}/> 分</span></label><button onClick={()=>setSettings(DEFAULT_SETTINGS)}>初期設定に戻す</button></details>
-    <footer>
-  <p>バス改正：{BUS_REVISION}</p>
-  <p>地下鉄改正：{SUBWAY_REVISION}</p>
-  <p>対象路線：麻15・麻16・麻17</p>
-  <p>対象停留所：花川北2条5丁目</p>
-</footer>
+    <footer><p>バス改正：{BUS_REVISION}</p><p>地下鉄改正：{SUBWAY_REVISION}</p><p>対象路線：麻15・麻16・麻17</p><p>対象停留所：花川北2条5丁目</p></footer>
   </main>
 }
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>)
